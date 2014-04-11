@@ -1,3 +1,4 @@
-roster.txt
+roster*.txt
 roster.exe
 roster
+.DS_Store
