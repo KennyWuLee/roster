@@ -1,3 +1,13 @@
+/*******************************/
+/*
+/*  Project Name: Trees Worse than Whomping Willows
+/*  Description: store hogwarts student data
+/*  File names: roster.c Student.h makefile
+/*  Date: 04/11/2014
+/*  Authors: Tim Miranda, Till Krischer
+/*
+/*******************************/
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
