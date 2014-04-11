@@ -16,7 +16,7 @@ void insert(Student** root, Student* node)
 {
 	if(*root == NULL)
 		*root = node;
-	else if(compareStudents(**root, *node) < 0)
+	else if(compareStudents(*node, **root) < 0)
 		insert(&((*root)->left), node);
 	else
 		insert(&((*root)->right), node);
