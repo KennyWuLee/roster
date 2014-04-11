@@ -3,19 +3,19 @@
 #include <stdlib.h>
 #include "Student.h"
 
-/* 
+/*
    Description: Compares names of two students
-				
+
    Parameters:  first1		- First name of the first student
    				last1		- Last name of the first student
 				first1		- First name of the second student
    				last1		- Last name of the second student
 
-				
+
    Returns:	    a negative number if student1's name comes before student2's name
    				0 if they are the same
    				a positive number if student1's name comes after student2's name
-*/ 
+*/
 int compareName(char* first1, char* last1, char* first2, char* last2)
 {
 	int diff = strcmp(last1, last2); // records the difference between the last names
@@ -25,12 +25,12 @@ int compareName(char* first1, char* last1, char* first2, char* last2)
 		return strcmp(first1, first2); // if last names are the same, it checks first names
 }
 
-/* 
+/*
    Description: Inserts a student into the tree root
-				
+
    Parameters:  root	- tree to insert in
    				node	- Student to insert
-*/ 
+*/
 void insert(Student** root, Student* node)
 {
 	// checks to see if tree is empty
@@ -43,12 +43,12 @@ void insert(Student** root, Student* node)
 		insert(&((*root)->right), node);
 }
 
-/* 
-   Description: prints Students in a tree in order 
-				
+/*
+   Description: prints Students in a tree in order
+
    Parameters:  root 	- root of the tree to print
-				
-*/ 
+
+*/
 void printInOrder(Student* root)
 {
 	char name[26];// to contain both first and last name
@@ -62,19 +62,19 @@ void printInOrder(Student* root)
 	}
 }
 
-/* 
-   Description: prints Students in a tree in preorder 
-				
+/*
+   Description: prints Students in a tree in preorder
+
    Parameters:  root 	- root of the tree to print
-				
-*/ 
+
+*/
 void printPreOrder(Student* root)
 {
 	char name[26];
 	// basic recursive preorder traversal
 	if(root)
 	{
-		
+
 		sprintf(name, "%s %s", root->first, root->last);
 		printf("%-25sPoints: %d\tYear: %d House: %s\n", name, root->points, root->year, HOUSE_NAMES[root->house]);
 		printPreOrder(root->left);
@@ -82,12 +82,12 @@ void printPreOrder(Student* root)
 	}
 }
 
-/* 
-   Description: prints Students in a tree in postorder 
-				
+/*
+   Description: prints Students in a tree in postorder
+
    Parameters:  root 	- root of the tree to print
-				
-*/ 
+
+*/
 void printPostOrder(Student* root)
 {
 	char name[26];
@@ -98,20 +98,20 @@ void printPostOrder(Student* root)
 		printPostOrder(root->right);
 		sprintf(name, "%s %s", root->first, root->last);
 		printf("%-25sPoints: %d\tYear: %d House: %s\n", name, root->points, root->year, HOUSE_NAMES[root->house]);
-		
+
 	}
 }
 
-/* 
+/*
    Description: Searches a student inside of a binary tree
-				
+
    Parameters:  root		- tree to search in
    				first 		- first name of student thats searched
    				last 		- last name of student thats searched
-				
+
    Returns:	    pointer to student on success,
    				null pointer, if student is not found
-*/ 
+*/
 Student* search( Student* root, char* first, char* last )
 {
 	if(root!=NULL)
@@ -135,56 +135,79 @@ Student* search( Student* root, char* first, char* last )
 	return NULL;
 }
 
-/* 
+/*
    Description: Deletes a student from a binary tree
-				
+
    Parameters:  root		- tree to search in
    				first 		- first name of student thats deleted
    				last 		- last name of student thats deleted
-				
+
    Returns:	    pointer to deleted student on success,
    				null pointer, if student is not found
-*/ 
+*/
 Student* delete(Student** root, char* first, char* last)
 {
+	//return NULL if empty tree or Student not found
     if(*root == NULL)
         return NULL;
+    //find student recursively;
     if(compareName(first, last, (*root)->first, (*root)->last) < 0)
         return delete(&((*root)->left), first, last);
     else if(compareName(first, last, (*root)->first, (*root)->last) > 0)
         return delete(&((*root)->right), first, last);
+    // found right node
     else
-    {  // found right node
+    {
+    	//safe student to return later
         Student* temp = (*root);
         if((*root)->left && (*root)->right) //two children
         {
-            Student** leftmost = &((*root)->right);
-            Student** temp2 = leftmost;
-            while(((*leftmost)->left))
-                *leftmost = (*leftmost)->left;
-            temp2 = leftmost;
-            (*temp2)->left = (*root)->left;
-            (*temp2)->right = (*root)->right;
-            root = temp2;
+        	//lookfor succesor to deleted node, starting at right child
+            Student* parentleftmost = (*root)->right;
+            if(parentleftmost->left)
+            {
+            	//find the parent of the leftmost node
+            	while(parentleftmost->left->left)
+                	parentleftmost = parentleftmost->left;
+                //save a pointer to the leftmost node
+                Student** leftmost = &(parentleftmost->left);
+            	Student* temp2 = *leftmost;
+            	//move the right child of leftmost node up.
+           		(*leftmost) = (*leftmost)->right;
+           		//change the childs of the leftmost node to the children of root
+           		temp2->right = (*root)->right;
+           		temp2->left = (*root)->left;
+           		//put leftmostnode into root;
+           		*root = temp2;
+           	}
+           	//if right child is succesor, it becomes the new node
+            else
+            {
+            	parentleftmost->left = (*root)->left;
+            	(*root) = parentleftmost;
+            }
         }
-        else if((*root)->left)
+        else if((*root)->left) //only left child
+        	//move the left child up
             *root = (*root)->left;
-        else if((*root)->right)
+        else if((*root)->right) //only right child
+        	//move the right child up
             *root = (*root)->right;
         else  // leaf node
+        	//delete the node
             *root = NULL;
         return temp;
     }
 }
 
-/* 
+/*
    Description: Converts a string to the right House
-				
+
    Parameters:  House 		-  String to convert
-				
+
    Returns:	    House on success
    				-1 when the String is not a house
-*/ 
+*/
 House getHouse(char* house)
 {
 	int i = 0;
@@ -195,19 +218,19 @@ House getHouse(char* house)
 	return -1;
 }
 
-/* 
+/*
    Description:  Takes information about a student, checks if it's valid, then creates
    					the student and adds him to the right house
-				
+
    Parameters:  houses[HOUSES]		- Array containing the trees for the different houses
    				first 				- first name of the student
    				last 				- last name of the student
    				points 				- points of the student
    				year 				- year in school of the student
    				house 				- house of the student
-				
+
    Returns:	    1 on success, 0 on fail
-*/ 
+*/
 int add(Student* houses[HOUSES], char* first, char* last, int points, int year, char* house)
 {
 	//checks to seee if year is within range
@@ -242,12 +265,12 @@ int add(Student* houses[HOUSES], char* first, char* last, int points, int year, 
 	return 1;
 }
 
-/* 
+/*
    Description: writes all students from a tree into a file in preorder
-				
+
    Parameters:  file 		- FILE pointer to write to
    				root 		- tree containing the students
-*/ 
+*/
 void savePreOrder(FILE* file, Student* root)
 {
 	// basic preorder traversal, but printing to a file
@@ -259,12 +282,12 @@ void savePreOrder(FILE* file, Student* root)
 	}
 }
 
-/* 
+/*
    Description: This recursive function sums up all the scores in a given tree
-				
+
    Parameters:  root - the root of the given tree
 	    sum  - the running total of the scores
-				
+
    Returns:	    the sum of the current sum plus the current node's score
 */
 int score(Student* root, int sum)
@@ -280,11 +303,11 @@ int score(Student* root, int sum)
 
 }
 
-/* 
+/*
    Description: clears all students from a tree.
-				
+
    Parameters:  root 		- tree containing the students
-*/ 
+*/
 void clear(Student* root)
 {
 	//only clear if there is a root
@@ -366,9 +389,10 @@ int main()
 					//add the student
 					add(houses, first, last, points, year, house);
 				fclose(file);
+				printf("Successfully loaded data from file %s.\n", filename);
 			}
 			else
-				printf("Load failed. Invalid file: %s", filename);
+				printf("Load failed. Invalid file: %s\n", filename);
 
 		}
 		else if(strcmp(command, "save") == 0)
@@ -386,9 +410,10 @@ int main()
 				for(i = 0; i < HOUSES; ++i)
 					savePreOrder(file, houses[i]);
 				fclose(file);
+				printf("Successfully saved data to file %s.\n", filename);
 			}
 			else
-				printf("Save failed. Invalid file: %s", filename);
+				printf("Save failed. Invalid file: %s\n", filename);
 
 		}
 		else if(strcmp(command, "clear") == 0)
@@ -469,7 +494,7 @@ int main()
 		}
 		else if(strcmp(command, "kill") == 0)
 		{
-			//read userinput into variables 
+			//read userinput into variables
 			char first[25], last[25], house[25];
 			scanf("%s %s %s", first, last, house);
 			//check if the entered house is correct
@@ -490,12 +515,12 @@ int main()
 					insert(&dead, temp);
 				}
 				else
-					printf("Printed if student cannot be found in given house when the kill command is invoked.");
+					printf("Kill failed. %s %s was not found in House %s\n", first, last, house);
 			}
 		}
 		else if(strcmp(command, "find")==0)
 		{
-			//read userinput into variables 
+			//read userinput into variables
 			char first[25], last[25], house[25];
 			char name[26];
 			scanf("%s", first);
@@ -507,27 +532,29 @@ int main()
 			if(h == -1)
 				printf("Find failed. Invalid house: %s\n", house);
 			else
+			{
 				//do the search, store result in temp
 				temp = search(houses[h], first, last);
-			if(temp == NULL)
-				printf("Find Failed. %s %s was not found in %s House\n", first, last, house);
-			else
-			{
-				//if a student was found print the info
-				sprintf(name, "%s %s", temp->first, temp->last);
-				printf("%-25sPoints: %d\tYear: %d House: %s\n", name, temp->points, temp->year, HOUSE_NAMES[temp->house]);
+				if(temp == NULL)
+					printf("Find Failed. %s %s was not found in %s House\n", first, last, house);
+				else
+				{
+					//if a student was found print the info
+					sprintf(name, "%s %s", temp->first, temp->last);
+					printf("%-25sPoints: %d\tYear: %d House: %s\n", name, temp->points, temp->year, HOUSE_NAMES[temp->house]);
+				}
 			}
 
 		}
 		else if(strcmp(command, "points")==0)
 		{
-			//read userinput into variables 
+			//read userinput into variables
 			char first[25], last[25], house[25];
 			int number = 0;
 			scanf("%s", first);
 			scanf("%s", last);
 			scanf("%s", house);
-			scanf("%d", &number);	
+			scanf("%d", &number);
 			House h = getHouse(house);
 			Student* temp = NULL;
 			//check if the entered house is correct
