@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "Student.h"
 
+<<<<<<< HEAD
 /* 
    Description: Compares names of two students
 				
@@ -38,11 +39,28 @@ void insert(Student** root, Student* node)
 	if(*root == NULL)
 		*root = node;
 	else if(compareName(node->first, node->last, (*root)->first, (*root)->last) < 0)
+=======
+int compareStudents(Student s1, Student s2)
+{
+	int diff = strcmp(s1.last, s2.last);
+	if(diff)
+		return diff;
+	else
+		return strcmp(s1.first, s2.first);
+}
+
+void insert(Student** root, Student* node)
+{
+	if(*root == NULL)
+		*root = node;
+	else if(compareStudents(*node, **root) < 0)
+>>>>>>> 9d0599e5dd5c3107af8c40fc3be47807a02e6284
 		insert(&((*root)->left), node);
 	else
 		insert(&((*root)->right), node);
 }
 
+<<<<<<< HEAD
 /* 
    Description: prints Students in a tree in order 
 				
@@ -53,6 +71,11 @@ void printInOrder(Student* root)
 {
 	char name[26];// to contain both first and last name
 	// basic recursive inorder traversal
+=======
+void printInOrder(Student* root)
+{
+	char name[26];
+>>>>>>> 9d0599e5dd5c3107af8c40fc3be47807a02e6284
 	if(root)
 	{
 		printInOrder(root->left);
@@ -62,6 +85,7 @@ void printInOrder(Student* root)
 	}
 }
 
+<<<<<<< HEAD
 /* 
    Description: prints Students in a tree in preorder 
 				
@@ -189,12 +213,22 @@ House getHouse(char* house)
 {
 	int i = 0;
 	// loops through the number of houses to see if input is a match
+=======
+Student* search( Student* root, char* first, char* last );
+
+Student* delete( Student** root, char* first, char* last );
+
+House getHouse(char* house)
+{
+	int i = 0;
+>>>>>>> 9d0599e5dd5c3107af8c40fc3be47807a02e6284
 	for(; i < HOUSES; ++i)
 		if (strcmp(HOUSE_NAMES[i], house) == 0)
 			return i;
 	return -1;
 }
 
+<<<<<<< HEAD
 /* 
    Description:  Takes information about a student, checks if it's valid, then creates
    					the student and adds him to the right house
@@ -211,24 +245,35 @@ House getHouse(char* house)
 int add(Student* houses[HOUSES], char* first, char* last, int points, int year, char* house)
 {
 	//checks to seee if year is within range
+=======
+int add(Student* houses[HOUSES], char* first, char* last, int points, int year, char* house)
+{
+>>>>>>> 9d0599e5dd5c3107af8c40fc3be47807a02e6284
 	if(year < 1 || year > 7)
 	{
 		printf("Add failed. Invalid year: %d\n", year);
 		return 0;
 	}
 	House h = getHouse(house);
+<<<<<<< HEAD
 	// checks to see if it is a valid house
+=======
+>>>>>>> 9d0599e5dd5c3107af8c40fc3be47807a02e6284
 	if(h == -1)
 	{
 		printf("Add failed. Invalid house: %s\n", house);
 		return 0;
 	}
 
+<<<<<<< HEAD
 	if(search(houses[h], first, last))
 	{
 		printf("Add failed. Student named %s %s already present in roster.\n", first, last);
 		return 0;
 	}
+=======
+	//todo call search on student;
+>>>>>>> 9d0599e5dd5c3107af8c40fc3be47807a02e6284
 
 	Student* temp = (Student*) malloc(sizeof(Student));
 	temp->first = strdup(first);
@@ -242,6 +287,7 @@ int add(Student* houses[HOUSES], char* first, char* last, int points, int year, 
 	return 1;
 }
 
+<<<<<<< HEAD
 /* 
    Description: writes all students from a tree into a file in preorder
 				
@@ -306,10 +352,18 @@ int main()
 	//Array holding the 4 trees for the houses
 	Student* houses[HOUSES];
 	//initialize roots with NULL
+=======
+
+int main()
+{
+	//houses
+	Student* houses[HOUSES];
+>>>>>>> 9d0599e5dd5c3107af8c40fc3be47807a02e6284
 	int i = 0;
 	for(; i < HOUSES; ++i)
 		houses[i] = NULL;
 
+<<<<<<< HEAD
 	//tree for dead students, initialized with NULL
 	Student* dead = NULL;
 
@@ -451,18 +505,33 @@ int main()
 			printPostOrder(dead);
 			printf("\n\n");
 		}
+=======
+	Student* dead = NULL;
+
+	while(1)
+	{
+		printf("Enter command: ");
+		char command[100];
+		scanf("%s", command);
+		if(strcmp(command, "quit") == 0)
+			return 0;
+>>>>>>> 9d0599e5dd5c3107af8c40fc3be47807a02e6284
 		else if(strcmp(command, "add") == 0)
 		{
 			char first[25], last[25], house[25];
 			int points = 0, year = 0;
 
+<<<<<<< HEAD
 			//read userinput int variables
+=======
+>>>>>>> 9d0599e5dd5c3107af8c40fc3be47807a02e6284
 			scanf("%s", first);
 			scanf("%s", last);
 			scanf("%d", &points);
 			scanf("%d", &year);
 			scanf("%s", house);
 
+<<<<<<< HEAD
 			//add the student, if the input data was fine print success message
 			if (add(houses, first, last, points, year, house))
 				printf("Added %s %s to roster.\n", first, last);
@@ -557,6 +626,28 @@ int main()
 			printf("Unknown command: %s\n", command);
 		}
 		//read until the rest of the line before reading in the next command
+=======
+			if (add(houses, first, last, points, year, house))
+				printf("Added %s %s to roster.\n", first, last);
+		}
+		else if(strcmp(command, "inorder") == 0)
+		{
+			printf("Inorder print-out of roster:\n\n");
+			for(i = 0; i < HOUSES; ++i)
+			{
+				printf("%s House\n\n", HOUSE_NAMES[i]);
+				printInOrder(houses[i]);
+				printf("\n");
+			}
+			printf("Deceased\n\n");
+			printInOrder(dead);
+			printf("\n\n");
+		}
+		else
+		{
+			printf("Unknown command: %s\n", command);
+		}
+>>>>>>> 9d0599e5dd5c3107af8c40fc3be47807a02e6284
 		while(getchar() != '\n');
 	}
 }
